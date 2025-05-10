@@ -1,0 +1,67 @@
+common_args:
+  training_type: "simulation"
+  random_seed: 69
+  available_memory: 8
+
+data_args:
+  dataset: "UCI-HAR"
+  partition_alpha: 0.5
+
+model_args:
+  model: "ResNet" #lr
+
+train_args:
+  federated_optimizer: "CMetaFL"
+  client_id_list: "[1,2,3,4,5,6,7,8,9,10]"
+  client_num_in_total: 30
+  client_num_per_round: 30
+  comm_round: 320
+  epochs: 1
+  batch_size: 64
+  client_optimizer: sgd
+  learning_rate: 0.01
+  weight_decay: 0.001
+  stage: train
+  # 元学习训练参数
+  meta_learning_rate: 0.5
+  cluster_num: 6
+  adaptation_steps: 5
+  need_conv: true
+  finetune_epochs: 10
+cluster_args:
+  silhouette_threshold: 1
+  cluster_method: "kmeans"
+  max_clusters: 6
+  min_clusters: 2
+  silhouette_threshold_high: 1
+  cluster_frequency: 10
+validation_args:
+  frequency_of_the_test: 1
+
+device_args:
+  using_gpu: true
+  gpu_id: 0
+  device_type: "gpu"
+  process_id: 0
+
+comm_args:
+  backend: "sp"                                 # 通信方式 Single-Process simulation
+
+fedprox_args:
+  fedprox_mu: 0.1
+
+
+
+# ****************************************************************************************
+tracking_args:
+  enable_tracking: true                        # 是否启用tracking
+  # When running on MLOps platform(open.fedml.ai), the default log path is at ~/fedml-client/fedml/logs/ and ~/fedml-server/fedml/logs/
+  enable_wandb: true                            # 是否启用wandb
+  wandb_key:
+  wandb_entity:                       #
+  wandb_project:
+  run_name:
+  using_mlops: false                            # 是否启用mlops
+
+
+

@@ -1,0 +1,112 @@
+common_args:
+  training_type: "simulation"                   # 训练类型
+  random_seed: 9                                # 随机种子
+  config_version: "release"                     # 配置版本
+  available_memory: 0.5
+#  mlops_api_key: f5b88f5dca344e6faf17809139b89c48
+#  mlops_project_name: sp_fedavg_test
+#  mlops_run_name: fedml_torch_fedavg_mnist_lr_mlsys
+
+data_args:
+  dataset: "femnist"                              # 数据集  femnist  mnist cifar10  cifar100  shakespeare  stackoverflow  synthetic  adult  darts
+  data_cache_dir: ~\.cache\fedml_data\fed_emnist # 数据集缓存路径(femnist 要特殊点，没改路径)
+  partition_method: "hetero"                    # 数据集划分方式
+  partition_alpha: 0.8                          # 数据集划分比例
+
+model_args:
+  model: "cnn" #lr                               # 模型
+  #roup_norm_channels: 32                       # 组归一化通道数
+
+train_args:                                     # 训练参数
+  federated_optimizer: "FedAvg_with_attack"                 # DecentralizedFL   FedAvg   HierarchicalFL  FedAvg_seq
+  client_id_list: "[]"                          # 客户端id列表
+  client_num_in_total: 100                    # 客户端总数
+  client_num_per_round: 100                  # 每轮参与训练的客户端数量
+  comm_round: 500                                  # 通信轮数
+  epochs: 1                                    # 客户端每次训练的轮数
+  batch_size: 64                                # 客户端每次训练的batch_size
+  client_optimizer: adam                         # 客户端优化器
+  learning_rate: 0.003                           # 学习率
+  weight_decay: 0.0001                           # 权重衰减
+  stage: train
+  clients_step: {}
+  momentum: 0.001                                 # 动量
+  #lr_schedule: None                             # 学习率调度
+  #lr_step_size: 1                               # 学习率调度步长
+  #lr_milestones: [1000, 2000, 3000]             # 学习率调度里程碑
+  #lr_decay_rate: 0.1                            # 学习率衰减率
+  #nesterov: False                               # Nesterov加速梯度下降
+  #server_optimizer: sgd                         # 服务端优化器
+  #server_lr: 1.0                                # 服务端学习率
+  #wd: 0.001                                     # 服务端权重衰减
+  #ci: 0                                         # 服务端惩罚因子
+  #server_momentum: 0.9                          # 服务端动量
+  #initialize_all_clients: False                 # 是否初始化所有客户端
+  #cache_client_status: False                    # 是否缓存客户端状态
+
+#fedprox_args:                                    # FedProx参数
+#  fedprox_mu: 0.1                                # 服务端惩罚因子
+#
+#fednova_args:                                    # FedNova参数
+#  gmf: 0.0                                       # 全局动量因子
+#  mu: 0.0                                        # 服务端惩罚因子
+#  dampening: 0.0                                 # 阻尼系数
+#
+#feddyn_args:                                     # FedDyn参数
+#  feddyn_alpha: 1.0                              # 服务端惩罚因子
+
+
+validation_args:                                # 验证集参数
+  frequency_of_the_test: 1                      # 每训练几轮进行一次测试
+
+device_args:                                    # 设备参数
+  using_gpu: true
+  gpu_id: 0
+  device_type: "gpu"
+  process_id: 0
+
+comm_args:
+  backend: "sp"                                 # 通信方式Single-Process simulation
+  #is_mobile: False                              # 是否是移动设备
+
+
+attack_args:                                    # 攻击参数
+  enable_attack: true                          # 是否启用攻击
+  attack_type: "Byzantine_attack"                             # 攻击类型
+  attack_rate: 0.1                             # 攻击比率 , 如果指定了 attack_client_list 则这个参数失效
+  scaling_factor: 5                           # 攻击强度
+  attack_round_list: [100,200]
+  attack_client_list: [10,20]
+  attack_all_round: true
+  attack_method: "reverse_attack"           # 攻击方法 reverse_attack scaling_attack  gaussian_attack
+
+
+defense_args:                                   # 防御参数
+  enable_defense: false                         # 是否启用防御
+  defense_type: "MahalnobisDefense"              # 防御类型 norm_diff_clipping norm_clipping norm_clipping_with_truncation norm_clipping_with_truncation_and_noise,,MahalnobisDefense
+  is_defense: 1
+  defense_round_list: [5,10,15,20]                     # 除了被攻击的那几轮要进行检查，随机抽样几轮进行检查
+#  krum防御参数
+krum:
+    krum_rate: 0.4
+
+# norm_diff_clipping防御参数
+norm_diff_clipping:
+  norm_bound: 1.0
+
+
+# ****************************************************************************************
+tracking_args:
+  enable_tracking: false                        # 是否启用tracking
+  # When running on MLOps platform(open.fedml.ai), the default log path is at ~/fedml-client/fedml/logs/ and ~/fedml-server/fedml/logs/
+  # 用wandb (Weight and Biases)记录日志 https://wandb.ai/site https://docs.wandb.ai/
+  enable_wandb: true                            # 是否启用wandb
+  wandb_key: 453fd07189d1af4dfffdd69a491ebdd7ce60fb00  # 个人的wandb key
+  wandb_entity: hsenn                       # 个人的wandb entity
+  wandb_project: SenExperiment                    # 个人的wandb project
+  run_name: CNNfemnist-Reverse                 # 个人的wandb run_name
+  using_mlops: false                            # 是否启用mlops
+#  wandb_group_id: "FedAvg_CNN"
+  track_clients: true
+  track_clients_list: [5,10,15,20,25,30]
+
